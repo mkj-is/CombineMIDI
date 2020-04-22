@@ -6,15 +6,13 @@ final class MIDISubscription<S: Subscriber>: Subscription where S.Input == MIDIM
 
     private var subscriber: S?
     private let client: MIDIClient
-    private let name: CFString
 
     private var port = MIDIPortRef()
     private var demand: Subscribers.Demand = .none
     private var portCreated = false
 
-    init(client: MIDIClient, port name: String, subscriber: S) {
+    init(client: MIDIClient, subscriber: S) {
         self.client = client
-        self.name = name as CFString
         self.subscriber = subscriber
     }
 
@@ -35,7 +33,7 @@ final class MIDISubscription<S: Subscriber>: Subscription where S.Input == MIDIM
     }
 
     private func createPort() {
-        MIDIInputPortCreateWithBlock(client.client, name as CFString, &port) { pointer, _ in
+        MIDIInputPortCreateWithBlock(client.client, client.generatePortName() as CFString, &port) { pointer, _ in
             pointer
                 .unsafeSequence()
                 .flatMap { $0.sequence() }
