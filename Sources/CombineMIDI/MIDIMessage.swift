@@ -48,7 +48,7 @@ public struct MIDIMessage {
     public let data2: UInt8
 
     /// All Notes Off. When an All Notes Off is received, all oscillators will turn off.
-    public static let allNotesOff: MIDIMessage = MIDIMessage(status: .controlChange, channel: 0, data1: 123, data2: 0)
+    static let allNotesOff: MIDIMessage = MIDIMessage(status: .controlChange, channel: 0, data1: 123, data2: 0)
 
     /// Initializes new message manually with all the parameters.
     /// - Parameters:

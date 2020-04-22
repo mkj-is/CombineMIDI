@@ -4,7 +4,7 @@ import Combine
 /// MIDI observable object updating every time new MIDI message
 /// is received.
 public final class MIDI: ObservableObject {
-    @Published public private(set) var message: MIDIMessage = .first
+    @Published public private(set) var message: MIDIMessage = .allNotesOff
 
     private var cancellable: Cancellable?
 
