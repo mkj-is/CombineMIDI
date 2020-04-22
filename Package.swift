@@ -3,19 +3,19 @@
 import PackageDescription
 
 let package = Package(
-    name: "MIDIPublisher",
+    name: "CombineMIDI",
     platforms: [.iOS(.v13), .macOS(.v10_15)],
     products: [
         .library(
-            name: "MIDIPublisher",
-            targets: ["MIDIPublisher"]),
+            name: "CombineMIDI",
+            targets: ["CombineMIDI"]),
     ],
     targets: [
         .target(
-            name: "MIDIPublisher",
+            name: "CombineMIDI",
             dependencies: []),
         .testTarget(
-            name: "MIDIPublisherTests",
-            dependencies: ["MIDIPublisher"]),
+            name: "CombineMIDITests",
+            dependencies: ["CombineMIDI"]),
     ]
 )
