@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 
+/// A publisher that emits MIDI messages from a MIDI client when received.
 public struct MIDIPublisher: Publisher {
     public typealias Output = MIDIMessage
     public typealias Failure = Never
