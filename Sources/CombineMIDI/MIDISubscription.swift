@@ -40,14 +40,13 @@ final class MIDISubscription<S: Subscriber>: Subscription where S.Input == MIDIM
                 .chunked(into: 3)
                 .compactMap(MIDIMessage.init)
                 .forEach { [weak self] message in
-                    guard let self = self else { return }
+                    guard let self = self, let subscriber = self.subscriber else { return }
                     guard self.demand > .none else {
                         self.disposePort()
                         return
                     }
 
-                    self.demand -= .max(1)
-                    _ = self.subscriber?.receive(message)   
+                    self.demand = subscriber.receive(message)
                 }
         }
         for i in 0...MIDIGetNumberOfSources() {

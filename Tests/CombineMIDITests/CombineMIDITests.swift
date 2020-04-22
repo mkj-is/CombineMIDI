@@ -1,5 +1,5 @@
 import XCTest
-@testable import MIDIPublisher
+@testable import CombineMIDI
 
 final class CombineMIDITests: XCTestCase {
     func testExample() {
