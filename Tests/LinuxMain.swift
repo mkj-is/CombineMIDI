@@ -1,7 +1,7 @@
 import XCTest
 
-import CombineMIDITests
+import MIDIPublisherTests
 
 var tests = [XCTestCaseEntry]()
-tests += CombineMIDITests.allTests()
+tests += MIDIPublisherTests.allTests()
 XCTMain(tests)
