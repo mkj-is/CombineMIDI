@@ -46,7 +46,8 @@ final class MIDISubscription<S: Subscriber>: Subscription where S.Input == MIDIM
                         return
                     }
 
-                    self.demand = subscriber.receive(message)
+                    self.demand -= .max(1)
+                    _ = subscriber.receive(message)
                 }
         }
         for i in 0...MIDIGetNumberOfSources() {
