@@ -13,7 +13,8 @@ public final class MIDI: ObservableObject {
     ///   to MIDI messages. By default a new client with default name
     ///   will be created.
     public init(client: MIDIClient = MIDIClient()) {
-        self.cancellable = MIDIPublisher(client: client)
+        self.cancellable = client
+            .publisher()
             .receive(on: RunLoop.main)
             .sink { [weak self] message in
                 self?.message = message
