@@ -15,6 +15,8 @@ public final class MIDI: ObservableObject {
     public init(client: MIDIClient = MIDIClient()) {
         self.cancellable = MIDIPublisher(client: client)
             .receive(on: RunLoop.main)
-            .assign(to: \.message, on: self)
+            .sink { [weak self] message in
+                self?.message = message
+            }
     }
 }
