@@ -12,7 +12,7 @@ public struct MIDIPublisher: Publisher {
         self.client = client
     }
 
-    public func receive<S>(subscriber: S) where S : Subscriber, Self.Failure == S.Failure, Self.Output == S.Input {
+    public func receive<S>(subscriber: S) where S : Subscriber, Failure == S.Failure, Output == S.Input {
         let subscription = MIDISubscription(client: client, subscriber: subscriber)
         subscriber.receive(subscription: subscription)
     }
