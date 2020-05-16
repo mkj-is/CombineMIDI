@@ -25,7 +25,7 @@ Add this package to your Xcode project or add following line to your `Package.sw
 
 First you need to create a MIDI client, it should be sufficient to create only one client per app (you can optionally pass name of the client as the initializer parameter):
 
-```
+```swift
 let client = MIDIClient(name: "My app MIDI client")
 ```
 
