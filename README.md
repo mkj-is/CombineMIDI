@@ -4,7 +4,10 @@
 
 Swift package made for easy connection of MIDI controllers to SwiftUI (or UIKit) using Combine.
 
-This package was created as a part of [UIKonf](https://uikonf.com) 2020 talk [**Combine: Connect MIDI signals to SwiftUI**](https://cfp.uikonf.com/proposals/119). It's original aim is no too fully wrap all CoreMIDI features, but to prototype user interface input using MIDI controllers.
+This package was created as a part of [UIKonf](https://uikonf.com) 2020 talk
+[**Combine: Connect MIDI signals to SwiftUI**](https://cfp.uikonf.com/proposals/119).
+It's main goal is to read messages from all MIDI sources and to be able to present these values
+in the user interface.
 
 ## Installation
 
@@ -23,7 +26,8 @@ Add this package to your Xcode project or add following line to your `Package.sw
 
 ## Usage
 
-First you need to create a MIDI client, it should be sufficient to create only one client per app (you can optionally pass name of the client as the initializer parameter):
+First you need to create a MIDI client, it should be sufficient to create only one client per app
+(you can optionally pass name of the client as the initializer parameter):
 
 ```swift
 let client = MIDIClient(name: "My app MIDI client")
@@ -33,7 +37,8 @@ Secondly, you create a publisher and it automatically connects to all sources an
 
 The first thing you probably want to do is to filter only the messages which are relevant to you.
 
-*Do not forget to receive those events on the main thread when subscribing on the user interface. To prevent dispatching too soon the publisher is emitting on the thread used by CoreMIDI, so you can quickly filter all the messages.*
+*Do not forget to receive those events on the main thread when subscribing on the user interface.
+To prevent dispatching too soon the publisher is emitting on the thread used by CoreMIDI, so you can quickly filter all the messages.*
 
 ```swift
 cancellable = client
