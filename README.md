@@ -56,7 +56,7 @@ cancellable = client
 This library is small on purpose and there is a large potential for improvement:
 
 - [ ] New MIDI controllers are not detected when the subscription was already made.
-- [ ] All MIDI sources are connected during the first subscription, there currently no way to select particaular device.
+- [ ] All MIDI sources are connected during the first subscription, there currently no way to select particular device.
 - [ ] Sending messages back to other destinations using the client is not possible.
 
 ## Contributing
