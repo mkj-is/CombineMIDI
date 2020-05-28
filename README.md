@@ -5,7 +5,8 @@
 Swift package made for easy connection of MIDI controllers to SwiftUI (or UIKit) using Combine.
 
 This package was created as a part of [UIKonf](https://uikonf.com) 2020 talk
-[**Combine: Connect MIDI signals to SwiftUI**](https://cfp.uikonf.com/proposals/119).
+**Combine: Connect MIDI signals to SwiftUI** ([proposal](https://cfp.uikonf.com/proposals/119)
+and [slides](https://speakerdeck.com/mkj/combine-connect-midi-signals-to-swiftui)).
 It's main goal is to read messages from all MIDI sources and to be able to present these values
 in the user interface.
 
