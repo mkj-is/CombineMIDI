@@ -2,17 +2,24 @@
 
 ![Build](https://github.com/mkj-is/CombineMIDI/workflows/Build/badge.svg)
 
-Swift package made for easy connection of MIDI controllers to SwiftUI (or UIKit) using Combine.
+Swift package made for easy connection of MIDI controllers to SwiftUI
+(or UIKit) using Combine.
 
-This package was created as a part of [UIKonf](https://uikonf.com) 2020 talk
-**Combine: Connect MIDI signals to SwiftUI** ([proposal](https://cfp.uikonf.com/proposals/119)
-and [slides](https://speakerdeck.com/mkj/combine-connect-midi-signals-to-swiftui)).
-It's main goal is to read messages from all MIDI sources and to be able to present these values
-in the user interface.
+This package was created as a part of [UIKonf 2020](https://uikonf.com)
+talk **Combine: Connect MIDI signals to SwiftUI**.
+It's main goal is to read messages from all MIDI sources
+and to be able to present these values in the user interface.
+
+For more guidance, demos and history see materials for the talk:
+
+- [Video](https://youtu.be/2jTtqoYwQF0)
+- [Slides](https://speakerdeck.com/mkj/combine-connect-midi-signals-to-swiftui)
+- [Proposal](https://cfp.uikonf.com/proposals/119)
 
 ## Installation
 
-Add this package to your Xcode project or add following line to your `Package.swift` file:
+Add this package to your Xcode project or add following line
+to your `Package.swift` file:
 
 ```swift
 .package(url: "https://github.com/mkj-is/CombineMIDI.git", from: "0.1.0")
@@ -27,19 +34,24 @@ Add this package to your Xcode project or add following line to your `Package.sw
 
 ## Usage
 
-First you need to create a MIDI client, it should be sufficient to create only one client per app
+First you need to create a MIDI client, it should be sufficient to create
+only one client per app
 (you can optionally pass name of the client as the initializer parameter):
 
 ```swift
 let client = MIDIClient(name: "My app MIDI client")
 ```
 
-Secondly, you create a publisher and it automatically connects to all sources and listens to all messages.
+Secondly, you create a publisher and it automatically connects
+to all sources and listens to all messages.
 
-The first thing you probably want to do is to filter only the messages which are relevant to you.
+The first thing you probably want to do is to filter only the messages
+which are relevant to you.
 
-*Do not forget to receive those events on the main thread when subscribing on the user interface.
-To prevent dispatching too soon the publisher is emitting on the thread used by CoreMIDI, so you can quickly filter all the messages.*
+*Do not forget to receive those events on the main thread when subscribing
+on the user interface. To prevent dispatching too soon the publisher is
+emitting on the thread used by CoreMIDI, so you can quickly filter all
+the messages.*
 
 ```swift
 cancellable = client
@@ -57,7 +69,8 @@ cancellable = client
 This library is small on purpose and there is a large potential for improvement:
 
 - [ ] New MIDI controllers are not detected when the subscription was already made.
-- [ ] All MIDI sources are connected during the first subscription, there currently no way to select a particular device.
+- [ ] All MIDI sources are connected during the first subscription,
+      there is currently no way to select a particular device.
 - [ ] Sending messages back to other destinations using the client is not possible.
 
 ## Contributing
