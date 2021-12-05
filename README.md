@@ -3,7 +3,7 @@
 ![Build](https://github.com/mkj-is/CombineMIDI/workflows/Build/badge.svg)
 
 Swift package made for easy connection of MIDI controllers to SwiftUI
-(or UIKit) using Combine.
+(or UIKit) using Combine and async-await.
 
 This package was created as a part of [UIKonf 2020](https://uikonf.com)
 talk **Combine: Connect MIDI signals to SwiftUI**.
@@ -31,6 +31,7 @@ to your `Package.swift` file:
 - Type-safe wrapper for MIDI messages (events).
 - Wrapper for the C-style MIDI client in CoreMIDI.
 - Combine Publisher for listening to MIDI messages.
+- MIDI AsyncStream for processing MIDI messages.
 
 ## Usage
 
@@ -42,11 +43,31 @@ only one client per app
 let client = MIDIClient(name: "My app MIDI client")
 ```
 
-Secondly, you create a publisher and it automatically connects
-to all sources and listens to all messages.
+### Async-await
 
-The first thing you probably want to do is to filter only the messages
-which are relevant to you.
+The first thing you probably want to do is to filter the messages
+which are relevant to you and get the values.
+
+```swift
+let stream = client.stream
+    .filter { $0.status == .controlChange }
+    .map(\.data2)
+```
+
+The you can process messages in a simple for-loop.
+*The loop will be running indefinitely until the task
+enclosing it will be cancelled.*
+
+```
+for await message in stream {
+    ...
+}
+```
+
+### Combine
+
+When using Combine, you create a publisher and it automatically connects
+to all sources and listens to all messages on subscribtion.
 
 *Do not forget to receive those events on the main thread when subscribing
 on the user interface. To prevent dispatching too soon the publisher is
