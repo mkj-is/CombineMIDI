@@ -14,7 +14,7 @@ For more guidance, demos and history see materials for the talk:
 
 - [Video](https://youtu.be/2jTtqoYwQF0)
 - [Slides](https://speakerdeck.com/mkj/combine-connect-midi-signals-to-swiftui)
-- [Proposal](https://cfp.uikonf.com/proposals/119)
+- [Proposal](Proposal.md)
 
 ## Installation
 
