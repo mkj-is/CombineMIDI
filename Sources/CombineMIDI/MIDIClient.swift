@@ -21,6 +21,20 @@ public final class MIDIClient {
     public func publisher() -> MIDIPublisher {
         MIDIPublisher(client: self)
     }
+    
+    #if swift(>=5.5.2)
+    @available(macOS 10.15, iOS 13.0, *)
+    public var stream: AsyncStream<MIDIMessage> {
+        AsyncStream { continuation in
+            let stream = MIDIStream(client: self) { message in
+                continuation.yield(message)
+            }
+            continuation.onTermination = { @Sendable _ in
+                stream.terminate()
+            }
+        }
+    }
+    #endif
 
     func generatePortName() -> String {
         "\(name)-\(UUID().uuidString)"
