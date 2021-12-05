@@ -23,6 +23,8 @@ public final class MIDIClient {
     }
     
     #if swift(>=5.5.2)
+    /// Creates a new asynchronous stream by automatically creating new
+    /// MIDI port and connecting to all available sources.
     @available(macOS 10.15, iOS 13.0, *)
     public var stream: AsyncStream<MIDIMessage> {
         AsyncStream { continuation in
