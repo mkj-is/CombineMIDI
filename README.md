@@ -22,7 +22,7 @@ Add this package to your Xcode project or add following line
 to your `Package.swift` file:
 
 ```swift
-.package(url: "https://github.com/mkj-is/CombineMIDI.git", from: "0.1.0")
+.package(url: "https://github.com/mkj-is/CombineMIDI.git", from: "0.2.0")
 ```
 
 ## Features
