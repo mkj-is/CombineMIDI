@@ -36,16 +36,109 @@ public struct MIDIMessage {
         /// a change in the pitch bender (wheel or lever, typically).
         /// The pitch bender is measured by a fourteen bit value.
         case pitchBendChange = 0xE0
+        
+        /// Tune request. Tells analog synthesizers to tune.
+        case tuneRequest = 0xF6
+        
+        // System Real-Time Messages
+        
+        /// Timing Clock. Send during synchronization
+        case timingClock = 0xF8
+        
+        /// Start. Message to start the current sequence.
+        case start = 0xFA
+        
+        /// Continue. Continue sequence from last stopped point.
+        case `continue` = 0xFB
+        
+        /// Stop. Stops the current sequence
+        case stop = 0xFC
+        
+        /// Active Sensing. Optional mechanism to keep
+        /// connections alive.
+        case activeSensing = 0xFE
+        
+        /// System Reset. Should not be sent on power-up, but
+        /// to reset receivers to their power-up status.
+        case systemReset = 0xFF
+        
+        /// Number of bytes expected in a message with this status
+        var bytesPerMessage: UInt8 {
+            switch self {
+            case .noteOff:
+                return 3
+            case .noteOn:
+                return 3
+            case .aftertouch:
+                return 3
+            case .controlChange:
+                return 3
+            case .programChange:
+                return 2
+            case .channelPressure:
+                return 2
+            case .pitchBendChange:
+                return 3
+            case .tuneRequest:
+                return 1
+            case .timingClock:
+                return 1
+            case .start:
+                return 1
+            case .continue:
+                return 1
+            case .stop:
+                return 1
+            case .activeSensing:
+                return 1
+            case .systemReset:
+                return 1
+            }
+        }
+        
+        var hasChannel: Bool {
+            switch self {
+                
+            case .noteOff:
+                return true
+            case .noteOn:
+                return true
+            case .aftertouch:
+                return true
+            case .controlChange:
+                return true
+            case .programChange:
+                return true
+            case .channelPressure:
+                return true
+            case .pitchBendChange:
+                return true
+            case .tuneRequest:
+                return false
+            case .timingClock:
+                return false
+            case .start:
+                return false
+            case .continue:
+                return false
+            case .stop:
+                return false
+            case .activeSensing:
+                return false
+            case .systemReset:
+                return false
+            }
+        }
     }
 
     /// Kind of the message.
     public let status: Status
     /// Channel of the message. Between 0-15.
-    public let channel: UInt8
+    public let channel: UInt8?
     /// First data byte. Usually a key number (note or controller). Between 0-127.
-    public let data1: UInt8
+    public let data1: UInt8?
     /// Second data byte. Usually a value (pressure, velocity or program number). Between 0-127.
-    public let data2: UInt8
+    public let data2: UInt8?
 
     /// All Notes Off. When an All Notes Off is received, all oscillators will turn off.
     static let allNotesOff: MIDIMessage = MIDIMessage(status: .controlChange, channel: 0, data1: 123, data2: 0)
@@ -65,15 +158,58 @@ public struct MIDIMessage {
 
     /// Initializes new message automatically by parsing an array of bytes (usually from a MIDI packet).
     /// - Parameters:
-    ///   - bytes: Array of bytes. At least three bytes must be supplied to create strongly-typed
-    ///   MIDI message.
+    ///   - bytes: Array of bytes with at least one byte. Different message types may be 1, 2, or 3 bytes
+    ///   as determined by the first 4 bits (status). If the number of bytes does not match the expected number as
+    ///   denoted by the status, this will return `nil`.
     public init?(bytes: [UInt8]) {
-        guard bytes.count >= 3, let status = Status(rawValue: bytes[0] & 0xF0) else {
+        guard let statusByte = bytes.first,
+              let status = Status(rawValue: statusByte & 0xF0),
+              bytes.count == status.bytesPerMessage
+        else {
             return nil
         }
         self.status = status
-        self.channel = bytes[0] & 0x0F
-        self.data1 = bytes[1]
-        self.data2 = bytes[2]
+        if status.hasChannel {
+            self.channel = bytes[0] & 0x0F
+        } else {
+            self.channel = nil
+        }
+        if status.bytesPerMessage > 1 {
+            self.data1 = bytes[1]
+        } else {
+            self.data1 = nil
+        }
+        if status.bytesPerMessage > 2 {
+            self.data2 = bytes[2]
+        } else {
+            self.data2 = nil
+        }
+    }
+}
+
+extension MIDIMessage {
+    struct PartialMessage {
+        var data: [UInt8]
+        var status: Status? {
+            return Status(rawValue: data[0] & 0xF0)
+        }
+        var message: MIDIMessage? {
+            return MIDIMessage(bytes: data)
+        }
+        mutating func appending(byte: UInt8) -> MIDIMessage? {
+            data.append(byte)
+            return message
+        }
+    }
+    enum InstreamMessage {
+        case message(MIDIMessage)
+        case partial(PartialMessage)
+    }
+    static func from(byte: UInt8) -> InstreamMessage {
+        let partial = PartialMessage(data: [byte])
+        if let message = partial.message {
+            return .message(message)
+        }
+        return .partial(partial)
     }
 }
