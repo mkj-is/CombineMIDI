@@ -84,15 +84,45 @@ public struct MIDIMessage {
             }
         }
     }
+    
+    /// Raw bytes the message is consisting from.
+    public var bytes: [UInt8]
 
     /// Kind of the message.
-    public let status: Status
+    public var status: Status? {
+        return Status(rawValue: bytes[0])
+    }
+    
     /// Channel of the message. Between 0-15.
-    public let channel: UInt8?
+    public var channel: UInt8? {
+        if let hasChannel = status?.hasChannel, hasChannel {
+            return bytes[0] & 0x0F
+        }
+        return nil
+    }
+    
     /// First data byte. Usually a key number (note or controller). Between 0-127.
-    public let data1: UInt8?
+    public var data1: UInt8? {
+        if let bytesPerMessage = status?.bytesPerMessage, bytesPerMessage > 1 {
+            return bytes[1]
+        }
+        return nil
+    }
+    
     /// Second data byte. Usually a value (pressure, velocity or program number). Between 0-127.
-    public let data2: UInt8?
+    public var data2: UInt8? {
+        if let bytesPerMessage = status?.bytesPerMessage, bytesPerMessage > 2 {
+            return bytes[2]
+        }
+        return nil
+    }
+    
+    public var isComplete: Bool {
+        if let bytesPerMessage = status?.bytesPerMessage {
+            return bytes.count >= bytesPerMessage
+        }
+        return false
+    }
 
     /// All Notes Off. When an All Notes Off is received, all oscillators will turn off.
     static let allNotesOff: MIDIMessage = MIDIMessage(status: .controlChange, channel: 0, data1: 123, data2: 0)
@@ -103,43 +133,20 @@ public struct MIDIMessage {
     ///   - channel: Channel of the message. Between 0-15.
     ///   - data1: First data byte. Usually a key number (note or controller). Between 0-127.
     ///   - data2: Second data bytes. Usually a value (pressure, velocity or program number). Between 0-127.
-    public init(status: Status = .noteOn, channel: UInt8 = 0, data1: UInt8 = 0, data2: UInt8 = 0) {
-        self.status = status
-        self.channel = channel
-        self.data1 = data1
-        self.data2 = data2
+    public init(status: Status, channel: UInt8? = nil, data1: UInt8? = nil, data2: UInt8? = nil) {
+        bytes = [status.rawValue | (channel ?? 0)]
+        if let data1 = data1 {
+            bytes.append(data1)
+        }
+        if let data2 = data2 {
+            bytes.append(data2)
+        }
     }
 
     /// Initializes new message automatically by parsing an array of bytes (usually from a MIDI packet).
     /// - Parameters:
-    ///   - bytes: Array of bytes with at least one byte. Different message types may be 1, 2, or 3 bytes
+    ///   - bytes: Array of bytes . Different message types may be 1, 2, or 3 bytes
     ///   as determined by the first 4 bits (status). If the number of bytes does not match the expected number as
-    ///   denoted by the status, this will return `nil`.
-    public init?(bytes: [UInt8]) {
-        guard let statusByte = bytes.first,
-              let status = Status(rawValue: statusByte & 0xF0),
-              bytes.count == status.bytesPerMessage
-        else {
-            return nil
-        }
-        self.status = status
-        if status.hasChannel {
-            self.channel = bytes[0] & 0x0F
-        } else {
-            self.channel = nil
-        }
-        if status.bytesPerMessage > 1 {
-            self.data1 = bytes[1]
-        } else {
-            self.data1 = nil
-        }
-        if status.bytesPerMessage > 2 {
-            self.data2 = bytes[2]
-        } else {
-            self.data2 = nil
-        }
-    }
-}
 
 extension MIDIMessage {
     struct PartialMessage {
