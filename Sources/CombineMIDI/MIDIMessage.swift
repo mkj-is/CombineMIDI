@@ -147,30 +147,8 @@ public struct MIDIMessage {
     /// - Parameters:
     ///   - bytes: Array of bytes . Different message types may be 1, 2, or 3 bytes
     ///   as determined by the first 4 bits (status). If the number of bytes does not match the expected number as
-
-extension MIDIMessage {
-    struct PartialMessage {
-        var data: [UInt8]
-        var status: Status? {
-            return Status(rawValue: data[0] & 0xF0)
-        }
-        var message: MIDIMessage? {
-            return MIDIMessage(bytes: data)
-        }
-        mutating func appending(byte: UInt8) -> MIDIMessage? {
-            data.append(byte)
-            return message
-        }
-    }
-    enum InstreamMessage {
-        case message(MIDIMessage)
-        case partial(PartialMessage)
-    }
-    static func from(byte: UInt8) -> InstreamMessage {
-        let partial = PartialMessage(data: [byte])
-        if let message = partial.message {
-            return .message(message)
-        }
-        return .partial(partial)
+    ///   denoted by the status the message will be uncomplete.
+    public init(bytes: [UInt8] = []) {
+        self.bytes = bytes
     }
 }
