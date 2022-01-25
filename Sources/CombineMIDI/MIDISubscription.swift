@@ -37,8 +37,23 @@ final class MIDISubscription<S: Subscriber>: Subscription where S.Input == MIDIM
             pointer
                 .unsafeSequence()
                 .flatMap { $0.sequence() }
-                .chunked(into: 3)
-                .compactMap(MIDIMessage.init)
+                .reduce(into: ([MIDIMessage](), Optional<MIDIMessage.PartialMessage>.none)) { (messageStream, nextByte) in
+                    if messageStream.1 == nil {
+                        // No partial message
+                        switch MIDIMessage.from(byte: nextByte) {
+                        case .partial(let partial):
+                            messageStream.1 = partial
+                        case .message(let message):
+                            messageStream.0.append(message)
+                        }
+                    } else {
+                        let message = messageStream.1!.appending(byte: nextByte)
+                        if let message = message {
+                            messageStream.0.append(message)
+                            messageStream.1 = nil
+                        }
+                    }
+                }.0
                 .forEach { [weak self] message in
                     guard let self = self, let subscriber = self.subscriber else { return }
                     guard self.demand > .none else {
