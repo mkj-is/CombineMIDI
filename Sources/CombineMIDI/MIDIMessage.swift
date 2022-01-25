@@ -42,7 +42,8 @@ public struct MIDIMessage {
         
         // System Real-Time Messages
         
-        /// Timing Clock. Send during synchronization
+        /// Timing Clock. Sent 24 times per quarter note when synchronization
+        /// is required.
         case timingClock = 0xF8
         
         /// Start. Message to start the current sequence.
@@ -65,67 +66,20 @@ public struct MIDIMessage {
         /// Number of bytes expected in a message with this status
         var bytesPerMessage: UInt8 {
             switch self {
-            case .noteOff:
+            case .noteOff, .noteOn, .aftertouch, .controlChange, .pitchBendChange:
                 return 3
-            case .noteOn:
-                return 3
-            case .aftertouch:
-                return 3
-            case .controlChange:
-                return 3
-            case .programChange:
+            case .programChange, .channelPressure:
                 return 2
-            case .channelPressure:
-                return 2
-            case .pitchBendChange:
-                return 3
-            case .tuneRequest:
-                return 1
-            case .timingClock:
-                return 1
-            case .start:
-                return 1
-            case .continue:
-                return 1
-            case .stop:
-                return 1
-            case .activeSensing:
-                return 1
-            case .systemReset:
+            case .tuneRequest, .timingClock, .start, .continue, .stop, .activeSensing, .systemReset:
                 return 1
             }
         }
         
         var hasChannel: Bool {
             switch self {
-                
-            case .noteOff:
+            case .noteOff, .noteOn, .aftertouch, .controlChange, .programChange, .channelPressure, .pitchBendChange:
                 return true
-            case .noteOn:
-                return true
-            case .aftertouch:
-                return true
-            case .controlChange:
-                return true
-            case .programChange:
-                return true
-            case .channelPressure:
-                return true
-            case .pitchBendChange:
-                return true
-            case .tuneRequest:
-                return false
-            case .timingClock:
-                return false
-            case .start:
-                return false
-            case .continue:
-                return false
-            case .stop:
-                return false
-            case .activeSensing:
-                return false
-            case .systemReset:
+            case .tuneRequest, .timingClock, .start, .continue, .stop, .activeSensing, .systemReset:
                 return false
             }
         }
