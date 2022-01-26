@@ -22,7 +22,7 @@ Add this package to your Xcode project or add following line
 to your `Package.swift` file:
 
 ```swift
-.package(url: "https://github.com/mkj-is/CombineMIDI.git", from: "0.2.0")
+.package(url: "https://github.com/mkj-is/CombineMIDI.git", from: "0.3.0")
 ```
 
 ## Features
@@ -51,7 +51,7 @@ which are relevant to you and get the values.
 ```swift
 let stream = client.stream
     .filter { $0.status == .controlChange }
-    .map(\.data2)
+    .compactMap(\.data2)
 ```
 
 The you can process messages in a simple for-loop.
@@ -78,7 +78,7 @@ the messages.*
 cancellable = client
     .publisher()
     .filter { $0.status == .controlChange }
-    .map { $0.data2 }
+    .compactMap(\.data2)
     .receive(on: RunLoop.main)
     .sink { value in
         ...
