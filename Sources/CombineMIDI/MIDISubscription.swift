@@ -33,27 +33,20 @@ final class MIDISubscription<S: Subscriber>: Subscription where S.Input == MIDIM
     }
 
     private func createPort() {
+        // Currently read partial message
+        var currentMessage = MIDIMessage()
+        
         MIDIInputPortCreateWithBlock(client.client, client.generatePortName() as CFString, &port) { pointer, _ in
             pointer
                 .unsafeSequence()
                 .flatMap { $0.sequence() }
-                .reduce(into: ([MIDIMessage](), Optional<MIDIMessage.PartialMessage>.none)) { (messageStream, nextByte) in
-                    if messageStream.1 == nil {
-                        // No partial message
-                        switch MIDIMessage.from(byte: nextByte) {
-                        case .partial(let partial):
-                            messageStream.1 = partial
-                        case .message(let message):
-                            messageStream.0.append(message)
-                        }
-                    } else {
-                        let message = messageStream.1!.appending(byte: nextByte)
-                        if let message = message {
-                            messageStream.0.append(message)
-                            messageStream.1 = nil
-                        }
+                .reduce(into: [MIDIMessage]()) { messages, byte in
+                    currentMessage.bytes.append(byte)
+                    if currentMessage.isComplete {
+                        messages.append(currentMessage)
+                        currentMessage = MIDIMessage()
                     }
-                }.0
+                }
                 .forEach { [weak self] message in
                     guard let self = self, let subscriber = self.subscriber else { return }
                     guard self.demand > .none else {
